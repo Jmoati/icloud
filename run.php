@@ -5,13 +5,9 @@ use Symfony\Component\HttpClient\HttpClient;
 require __DIR__ . '/secret.php';
 require __DIR__ . '/vendor/autoload.php';
 
-const ICLOUD_URL = 'https://fmipmobile.icloud.com';
-
 class FindMyiPhone {
     private $username;
     private $password;
-    public $devices = array();
-    private $email_updates = true;
     private $host = 'fmipmobile.icloud.com';
     private $scope ;
     private $client_context = array(
@@ -53,17 +49,12 @@ class FindMyiPhone {
      * @param $password - iCloud Password
      */
     public function __construct($username, $password) {
-        if (!extension_loaded('curl')) {
-            throw new FindMyiPhoneException('PHP extension cURL is not loaded.');
-        }
         $this->username = $username;
         $this->password = $password;
+
         $this->init_client();
     }
-    /**
-     * Init Client
-     *
-     */
+
     private function init_client() {
         $post_data = json_encode(array(
             'clientContext' => $this->client_context
@@ -71,35 +62,10 @@ class FindMyiPhone {
 
 
 
-        dd(json_decode($this->make_request('initClient', $post_data, true)));
-        $headers = $this->parse_curl_headers($this->make_request('initClient', $post_data, true));
+        array_walk(json_decode($this->make_request('initClient', $post_data), true)['content'], function($device) {
+            dd($device);
 
-        /*
-        if(isset($headers['X-Apple-MMe-Host'])){
-            $this->host = $headers['X-Apple-MMe-Host'];
-            $this->scope = $headers['X-Apple-MMe-Scope'];
-            throw new FindMyiPhoneException(true);
-        }
-        else{
-            throw new FindMyiPhoneException(false);
-        }
-        */
-
-        $this->refresh_client();
-    }
-    /**
-     * Refresh Client
-     *
-     */
-    public function refresh_client() {
-        $post_data = json_encode(array(
-            'clientContext' => $this->client_context,
-            'serverContext' => $this->server_context
-        ));
-
-        foreach (json_decode($this->make_request('refreshClient', $post_data))->content as $id => $device) {
-            $this->devices[$id] = $device;
-        }
+        });
     }
 
     /**
@@ -111,10 +77,6 @@ class FindMyiPhone {
      * @return HTTP response
      */
     private function make_request($method, $post_data, $return_headers = false, $headers = array()) {
-        if(!is_string($method)) throw new FindMyiPhoneException('Expected $method to be a string');
-        if(!$this->is_json($post_data)) throw new FindMyiPhoneException('Expected $post_data to be json');
-        if(!is_array($headers)) throw new FindMyiPhoneException('Expected $headers to be an array');
-        if(!is_bool($return_headers)) throw new FindMyiPhoneException('Expected $return_headers to be a bool');
         if(!isset($this->scope)) $this->scope = $this->username;
 
         array_push($headers, 'Accept-Language: en-us');
@@ -142,39 +104,11 @@ class FindMyiPhone {
         ));
         $http_result = curl_exec($curl);
 
-
-        dump($http_result);
-
         curl_close($curl);
+
         return $http_result;
-    }
-    /**
-     * Parse cURL headers
-     * @param $response - cURL response including the headers
-     * @return array of headers
-     */
-    private function parse_curl_headers($response) {
-        $headers = array();
-        foreach (explode("\r\n", substr($response, 0, strpos($response, "\r\n\r\n"))) as $i => $line) {
-            if ($i === 0) {
-                $headers['http_code'] = $line;
-            } else {
-                list($key, $value) = explode(': ', $line);
-                $headers[$key] = $value;
-            }
-        }
-        return $headers;
-    }
-    /**
-     * Finds whether a variable is json.
-     */
-    private function is_json($var) {
-        json_decode($var);
-        return (json_last_error() == JSON_ERROR_NONE);
     }
 }
 
-class FindMyiPhoneException extends Exception {}
 
 $client = new FindMyiPhone($username, $password);
-dd($client->devices);
