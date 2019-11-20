@@ -56,15 +56,12 @@ class FindMyiPhone {
     }
 
     private function init_client() {
-        $post_data = json_encode(array(
-            'clientContext' => $this->client_context
-        ));
+        $post_data = [
+            'clientContext' => $this->client_context,
+        ];
 
-
-
-        array_walk(json_decode($this->make_request('initClient', $post_data), true)['content'], function($device) {
-            dd($device);
-
+        array_walk($this->make_request('initClient', $post_data)['content'], function($device) {
+            dump($device["name"]);
         });
     }
 
@@ -84,6 +81,10 @@ class FindMyiPhone {
         array_push($headers, 'X-Apple-Realm-Support: 1.0');
         array_push($headers, 'X-Apple-Find-Api-Ver: 3.0');
         array_push($headers, 'X-Apple-Authscheme: UserIdGuest');
+
+        $client = HttpClient::create();
+
+        /*
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -105,8 +106,21 @@ class FindMyiPhone {
         $http_result = curl_exec($curl);
 
         curl_close($curl);
+        */
 
-        return $http_result;
+        $http_result = $client->request('POST',
+            sprintf("https://%s/fmipservice/device/%s/%s", $this->host, $this->scope, $method),
+            [
+                'headers' => $headers,
+                'json' => $post_data,
+                'auth_basic' => [
+                    $this->username,
+                    $this->password,
+                    ],
+            ]
+        );
+
+        return json_decode($http_result->getContent(), true);
     }
 }
 
