@@ -61,7 +61,7 @@ class FindMyiPhone {
         ];
 
         array_walk($this->make_request('initClient', $post_data)['content'], function($device) {
-            dump($device["name"], $device['id']);
+            dump($device);
         });
     }
 
@@ -88,6 +88,8 @@ class FindMyiPhone {
         $http_result = $client->request('POST',
             sprintf("https://%s/fmipservice/device/%s/%s", $this->host, $this->scope, $method),
             [
+                'verify_peer' => false,
+                'verify_host' => false,
                 'headers' => $headers,
                 'json' => $post_data,
                 'auth_basic' => [
