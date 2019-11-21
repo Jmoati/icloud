@@ -21,7 +21,7 @@ class FindMyiPhone {
         'productType' => 'iPhone6,1',
         'fmly'=> true,
 //        'shouldLocate' => true,
-//       'selectedDevice'=> 'all'
+//       'selectedDevice'=> "9/xkYLfL9WMuB+kkkxxaV2E9d3XKLI/iBGHq2IdrhE3+HCHi6aqEHOHYVNSUzmWV"
     );
     private $server_context = array(
         'callbackIntervalInMS' => 10000,
@@ -61,7 +61,7 @@ class FindMyiPhone {
         ];
 
         array_walk($this->make_request('initClient', $post_data)['content'], function($device) {
-            dump($device["name"]);
+            dump($device["name"], $device['id']);
         });
     }
 
@@ -81,32 +81,9 @@ class FindMyiPhone {
         array_push($headers, 'X-Apple-Realm-Support: 1.0');
         array_push($headers, 'X-Apple-Find-Api-Ver: 3.0');
         array_push($headers, 'X-Apple-Authscheme: UserIdGuest');
+        $headers['User-Agent'] = 'FindMyiPhone/376 CFNetwork/672.0.8 Darwin/14.0.0';
 
         $client = HttpClient::create();
-
-        /*
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_TIMEOUT => 9,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_FOLLOWLOCATION => false,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_AUTOREFERER => true,
-            CURLOPT_VERBOSE => false,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $post_data,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_HEADER => $return_headers,
-            CURLOPT_URL => sprintf("https://%s/fmipservice/device/%s/%s", $this->host, $this->scope, $method),
-            CURLOPT_USERPWD => $this->username . ':' . $this->password,
-            CURLOPT_USERAGENT => 'FindMyiPhone/376 CFNetwork/672.0.8 Darwin/14.0.0'
-        ));
-        $http_result = curl_exec($curl);
-
-        curl_close($curl);
-        */
 
         $http_result = $client->request('POST',
             sprintf("https://%s/fmipservice/device/%s/%s", $this->host, $this->scope, $method),
