@@ -37,7 +37,7 @@ class Client
         $headers[] = 'X-Apple-Find-Api-Ver: 3.0';
         $headers[] = 'X-Apple-Authscheme: UserIdGuest';
         $headers['User-Agent'] = 'FindMyiPhone/376 CFNetwork/672.0.8 Darwin/14.0.0';
-        
+
         $result = $this
             ->client
             ->request('POST',
@@ -55,7 +55,7 @@ class Client
                           ],
                       ]
             );
-        
+
         return json_decode($result->getContent(), true);
     }
     

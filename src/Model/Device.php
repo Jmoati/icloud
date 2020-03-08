@@ -9,8 +9,8 @@ class Device
 {
     public string $id;
     public string $name;
-    public ?Location $location;
-    public float $batteryLevel;
+    public ?Location $location = null;
+    public float $batteryLevel = 0;
 
     public function __construct(array $data)
     {

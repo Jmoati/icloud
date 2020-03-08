@@ -11,7 +11,6 @@ class Location
     public float $accuracy;
 
     public string $type;
-
     public bool $isOld;
 
     public function __construct(array $data)
