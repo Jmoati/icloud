@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jmoati\FindMyPhone\Model;
 
-class Location
+final class Location
 {
     public float $longitude;
     public float $latitude;

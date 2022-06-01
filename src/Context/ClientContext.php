@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jmoati\FindMyPhone\Context;
 
 
-class ClientContext
+final class ClientContext
 {
     static public function get(): array
     {

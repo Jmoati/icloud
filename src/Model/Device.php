@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jmoati\FindMyPhone\Model;
 
 
-class Device
+final class Device
 {
     public string $id;
     public string $name;

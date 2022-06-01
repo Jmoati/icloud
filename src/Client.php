@@ -9,24 +9,15 @@ use Jmoati\FindMyPhone\Model\Credential;
 use Jmoati\FindMyPhone\Model\Device;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class Client
+final class Client
 {
-    const HOST_DEFAULT = 'fmipmobile.icloud.com';
-    
-    private HttpClientInterface $client;
-    private Credential          $credential;
-    private string              $host;
-    
+    private const HOST_DEFAULT = 'fmipmobile.icloud.com';
+
     public function __construct(
-        HttpClientInterface $client,
-        Credential $credential,
-        ?string $host = null
-    )
-    {
-        $this->client = $client;
-        $this->credential = $credential;
-        
-        $this->host = $host ?? self::HOST_DEFAULT;
+        private HttpClientInterface $client,
+        private Credential $credential,
+        private ?string $host = self::HOST_DEFAULT
+    ) {
     }
     
     private function request(string $method, array $headers = []): array
